@@ -1512,18 +1512,18 @@ func (v *parser) parseParenExpr() ParseNode {
 
 func (v *parser) parseExpr() ParseNode {
 	defer un(trace(v, "expr"))
-
+	
 	pri := v.parsePostfixExpr()
 	if pri != nil {
 		return pri
 	}
 
-	if bin := v.parseBinaryOperator(0, pri); bin != nil {
-		return bin
-	}
-
 	if par := v.parseParenExpr(); par != nil {
 		return par
+	}
+
+	if bin := v.parseBinaryOperator(0, pri); bin != nil {
+		return bin
 	}
 
 	return nil
@@ -1708,7 +1708,7 @@ func (v *parser) parsePrimaryExpr() ParseNode {
 				parameters = nil
 			} else {
 				endToken := v.consumeToken()
-				_ = endToken // TODO: Do somethign with end token?
+				_ = endToken // TODO: Do something with end token?
 			}
 		}
 
@@ -1823,9 +1823,7 @@ func (v *parser) parseLitExpr() ParseNode {
 
 	var res ParseNode
 
-	if tupleLit := v.parseTupleLit(); tupleLit != nil {
-		res = tupleLit
-	} else if boolLit := v.parseBoolLit(); boolLit != nil {
+	if boolLit := v.parseBoolLit(); boolLit != nil {
 		res = boolLit
 	} else if numberLit := v.parseNumberLit(); numberLit != nil {
 		res = numberLit
@@ -1833,6 +1831,8 @@ func (v *parser) parseLitExpr() ParseNode {
 		res = stringLit
 	} else if runeLit := v.parseRuneLit(); runeLit != nil {
 		res = runeLit
+	} else if tupleLit := v.parseTupleLit(); tupleLit != nil {
+		res = tupleLit
 	}
 
 	return res

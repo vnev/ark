@@ -1,0 +1,8 @@
+[c] func printf(fmt: ^u8, ...) -> int;
+
+pub func main() -> int {
+	j: int = 12;
+	i: int = (j + 25);
+	C::printf(c"%d\n", i);
+	return 0;
+}
