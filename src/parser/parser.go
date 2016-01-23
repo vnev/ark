@@ -1495,12 +1495,13 @@ func (v *parser) parseTypeReference() *TypeReferenceNode {
 func (v *parser) parseParenExpr() ParseNode {
 	defer un(trace(v, "paren"))
 
-	if !v.tokenMatches(0, TOKEN_SEPARATOR, "(") {
-		return
+	if !v.tokenMatches(0, lexer.TOKEN_SEPARATOR, "(") {
+		return nil
 	}
 	v.consumeToken()
-	
-	if parenExpr := v.parseExpr(); parenExpr == nil {
+
+	parenExpr := v.parseExpr();	
+	if parenExpr == nil {
 		v.err("Expected expression within parentheses")
 	}
 	
@@ -1513,15 +1514,19 @@ func (v *parser) parseExpr() ParseNode {
 	defer un(trace(v, "expr"))
 
 	pri := v.parsePostfixExpr()
-	if pri == nil {
-		return nil
+	if pri != nil {
+		return pri
 	}
 
 	if bin := v.parseBinaryOperator(0, pri); bin != nil {
 		return bin
 	}
 
-	return pri
+	if par := v.parseParenExpr(); par != nil {
+		return par
+	}
+
+	return nil
 }
 
 func (v *parser) parseBinaryOperator(upperPrecedence int, lhand ParseNode) ParseNode {
