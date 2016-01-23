@@ -1495,18 +1495,17 @@ func (v *parser) parseTypeReference() *TypeReferenceNode {
 func (v *parser) parseParenExpr() ParseNode {
 	defer un(trace(v, "paren"))
 
-	if v.tokenMatches(0, TOKEN_SEPARATOR, "(") {
-		v.consumeToken()
-		parenExpr := v.parseExpr()
-		if parenExpr == nil {
-			v.err("Expected expression within parentheses")
-		}
-		if !v.tokenMatches(0, lexer.TOKEN_SEPARATOR, ")") {
-			v.err("`)` not found")
-		}
-		
-		return parenExpr
+	if !v.tokenMatches(0, TOKEN_SEPARATOR, "(") {
+		return
 	}
+	v.consumeToken()
+	
+	if parenExpr := v.parseExpr(); parenExpr == nil {
+		v.err("Expected expression within parentheses")
+	}
+	
+	v.expect(lexer.TOKEN_OPERATOR, ")")		
+	return parenExpr
 }
 		
 
