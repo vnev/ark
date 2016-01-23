@@ -1481,7 +1481,7 @@ func (v *parser) parseTypeReference() *TypeReferenceNode {
 			if !v.tokenMatches(0, lexer.TOKEN_SEPARATOR, ",") {
 				break
 			}
-			v.consumeToken()
+			
 		}
 
 		v.expect(lexer.TOKEN_OPERATOR, ">")
@@ -1491,6 +1491,24 @@ func (v *parser) parseTypeReference() *TypeReferenceNode {
 	res.SetWhere(name.Where())
 	return res
 }
+
+func (v *parser) parseParenExpr() ParseNode {
+	defer un(trace(v, "paren"))
+
+	if v.tokenMatches(0, TOKEN_SEPARATOR, "(") {
+		v.consumeToken()
+		parenExpr := v.parseExpr()
+		if parenExpr == nil {
+			v.err("Expected expression within parentheses")
+		}
+		if !v.tokenMatches(0, lexer.TOKEN_SEPARATOR, ")") {
+			v.err("`)` not found")
+		}
+		
+		return parenExpr
+	}
+}
+		
 
 func (v *parser) parseExpr() ParseNode {
 	defer un(trace(v, "expr"))
